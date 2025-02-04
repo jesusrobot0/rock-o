@@ -222,7 +222,7 @@ const AudioWave = () => {
               fontWeight: "normal",
             }}
           >
-            Telescreen 5000
+            Telescreen
           </span>
         </div>
 
