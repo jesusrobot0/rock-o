@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const AudioWave = () => {
-  const [wave, setWave] = useState(Array(60).fill(0));
+  const [wave, setWave] = useState(Array(100).fill(0));
   const [output, setOutput] = useState("INICIANDO SISTEMA...");
   const [networkLevel, setNetworkLevel] = useState(0);
   const [ramUsage, setRamUsage] = useState(0);
@@ -17,9 +17,12 @@ const AudioWave = () => {
     const interval = setInterval(() => {
       setWave(
         wave.map((_, i) => {
-          const frequency = Math.sin(Date.now() / 150 + i / 1.5) * 35;
-          const amplitude = Math.cos(Date.now() / 200 + i / 2) * 30;
-          const randomness = (Math.random() - 0.5) * 30;
+          const timeOffset = Date.now() / 500;
+          const position = (i + timeOffset) % 100;
+
+          const frequency = Math.sin(position / 1.5) * 80;
+          const amplitude = Math.cos(position / 2) * 75;
+          const randomness = (Math.random() - 0.5) * 60;
           return frequency + amplitude + randomness;
         })
       );
@@ -29,7 +32,7 @@ const AudioWave = () => {
       setCpuUsage(Math.floor(Math.random() * 3));
       setTime(new Date().toLocaleTimeString());
       setIsListening((prev) => !prev);
-    }, 2000);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [wave]);
@@ -54,7 +57,13 @@ const AudioWave = () => {
         }`}
         style={{ boxShadow: level >= 0 ? "0 0 10px lime" : "none" }}
       ></div>
-      <div className="text-gray-400 text-xs mt-1">{label}</div>
+      <div
+        className={`text-xs mt-1 ${
+          isPowerOn ? "text-gray-400" : "text-gray-700"
+        }`}
+      >
+        {label}
+      </div>
     </div>
   );
 
@@ -82,34 +91,58 @@ const AudioWave = () => {
     >
       <div className="flex items-center justify-center w-full h-full bg-gradient-to-b from-black to-neutral-900 rounded-sm border-8 border-neutral-700 p-4 relative overflow-hidden shadow-inner">
         <div className="absolute top-4 left-4 text-green-400 text-lg font-mono flex items-center">
-          <span>{getWeatherIcon(weather)}</span>
-          <span className="ml-2">{weather}</span>
+          <span
+            className={isPowerOn ? "text-green-400" : "text-gray-700"}
+            style={{
+              textShadow: isPowerOn ? "0 0 10px #4ade80" : "none",
+              transition: "all 0.3s ease",
+            }}
+          >
+            <span>{getWeatherIcon(weather)}</span>
+            <span className="ml-2">{weather}</span>
+          </span>
         </div>
         <div className="absolute top-4 right-4 text-green-400 text-lg font-mono">
-          {time}
+          <span
+            className={isPowerOn ? "text-green-400" : "text-gray-700"}
+            style={{
+              textShadow: isPowerOn ? "0 0 10px #4ade80" : "none",
+              transition: "all 0.3s ease",
+            }}
+          >
+            {time}
+          </span>
         </div>
 
         <div className="absolute bottom-4 right-4 flex space-x-4">
-          {renderTrafficLight(networkLevel, "RED")}
-          {renderTrafficLight(ramUsage, "RAM")}
-          {renderTrafficLight(cpuUsage, "CPU")}
+          {renderTrafficLight(isPowerOn ? networkLevel : -1, "RED")}
+          {renderTrafficLight(isPowerOn ? ramUsage : -1, "RAM")}
+          {renderTrafficLight(isPowerOn ? cpuUsage : -1, "CPU")}
         </div>
 
         <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-green-400"></div>
 
-        <div className="flex items-center h-full">
+        <div className="flex items-center w-full h-full justify-evenly">
           {wave.map((value, index) => (
             <div
               key={index}
-              className="mx-1 w-3 bg-green-400 rounded-sm"
+              className={`w-2 rounded-sm transition-colors duration-300 ${
+                isMicrophoneOn && isPowerOn ? "bg-green-400" : "bg-gray-700"
+              }`}
               style={{
-                height: `${Math.abs(value) + 20}px`,
-                transform: `translateY(${value > 0 ? "-" : ""}${
-                  Math.abs(value) / 2
+                height: `${
+                  isMicrophoneOn && isPowerOn ? Math.abs(value) + 50 : 2
+                }px`,
+                transform: `translateY(${
+                  isMicrophoneOn && isPowerOn
+                    ? (value > 0 ? "-" : "") + Math.abs(value) / 2
+                    : 0
                 }px)`,
                 transition:
-                  "transform 0.05s ease-in-out, height 0.05s ease-in-out",
-                boxShadow: "0 0 10px lime",
+                  "transform 0.05s ease-in-out, height 0.05s ease-in-out, background-color 0.3s ease",
+                boxShadow:
+                  isMicrophoneOn && isPowerOn ? "0 0 10px lime" : "none",
+                margin: "0 2px",
               }}
             ></div>
           ))}
