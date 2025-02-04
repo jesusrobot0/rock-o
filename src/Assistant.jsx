@@ -120,6 +120,22 @@ const AudioWave = () => {
           {renderTrafficLight(isPowerOn ? cpuUsage : -1, "CPU")}
         </div>
 
+        <div className="absolute bottom-4 left-4 text-green-400 text-lg font-mono">
+          <span
+            className={`${isPowerOn ? "text-green-400" : "text-gray-700"}`}
+            style={{
+              textShadow: isPowerOn ? "0 0 10px #4ade80" : "none",
+              transition: "all 0.3s ease",
+            }}
+          >
+            {isPowerOn
+              ? isMicrophoneOn
+                ? "ESCUCHANDO..."
+                : "MICRÓFONO APAGADO"
+              : "SISTEMA APAGADO"}
+          </span>
+        </div>
+
         <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-green-400"></div>
 
         <div className="flex items-center w-full h-full justify-evenly">
@@ -206,7 +222,7 @@ const AudioWave = () => {
               fontWeight: "normal",
             }}
           >
-            ROCK-O Matic 5000
+            Telescreen 5000
           </span>
         </div>
 
